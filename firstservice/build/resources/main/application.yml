@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: my-first-service
+
+# 랜덤 포드를 사용하기 위해 0으로 설정
+# Scale-out시 여러개의 인스턴스가 어떤 포트에서 열릴 지 모르는 상황을 가정하고,
+# 여러개의 인스턴스를 가동시킬수 있도록 하기 위해 사용
+server:
+  port: 0
+
+eureka:
+  client:
+    # Eureka Discovery Server(Naming Server)가 관리하게 될 인스턴스 대상으로 등록되게 하도록 TRUE
+    fetch-registry: true
+    register-with-eureka: true
+    # 등록될 Eureka Discovery Server(Naming Server)의 Location
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+  # 인스터스 ID를 지정하지 않으면, Eureka Server는 여러개의 인스턴스가 랜덤포트로 작동하게 되더라도 항상 0으로 인식하게 된다.
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}

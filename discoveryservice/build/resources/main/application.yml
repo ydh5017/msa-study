@@ -1,0 +1,12 @@
+spring:
+  application:
+  name: discoveryservice
+
+server:
+  port: 8761
+
+# Eureka Naming Server? Register? Fetch ?? ?? (?? ??? Eureka Server??? FALSE)
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false

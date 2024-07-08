@@ -1,0 +1,48 @@
+server:
+  port: 8000
+
+#JWT
+jwt:
+  secret:
+    key: 7Iqk7YyM66W07YOA7L2U65Sp7YG065+9U3ByaW5n6rCV7J2Y7Yqc7YSw7LWc7JuQ67mI7J6F64uI64ukLg==
+
+spring:
+  application:
+    name: apigateway-service
+  cloud:
+    gateway:
+        routes:
+          - id : first-service # 라우터의 식별자
+            # 연결해줄 Service Location
+            # lb:// : Load Balancer 를 가리키는 프로토콜
+            # 이것은 일반적으로 서비스 디스커버리나 로드 밸런싱을 통해 서비스를 찾고 분산된 방식으로 트래픽을 라우팅할 때 사용된다.
+            # MY-FIRST-SERVICE : 실제로 호출하려는 서비스의 이름이나 ID
+            uri: lb://MY-FIRST-SERVICE
+            predicates: # 라우팅 조건
+              - Path=/first-service/**
+          - id: second-service
+            uri: lb://MY-SECOND-SERVICE
+            predicates:
+              - Path=/second-service/**
+          - id: user-service-signup
+            uri: lb://USER-SERVICE
+            predicates:
+              - Path=/user-service/users
+              - Method=POST
+            filters:
+              # user-service 빼고 URL 패턴 재정의 (/user-service/users -> /users)
+              - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+          - id: user-service-login
+            uri: lb://USER-SERVICE
+            predicates:
+              - Path=/user-service/users/login
+              - Method=POST
+            filters:
+              - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+          - id: user-service
+            uri: lb://USER-SERVICE
+            predicates:
+              - Path=/user-service/**
+            filters:
+              - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+              - name: AuthorizationFilter
